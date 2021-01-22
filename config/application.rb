@@ -38,5 +38,16 @@ module EbookStoreApi
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # Test files generator
+    config.generators do |generator|
+      generator.test_framework(
+        :rspec,
+        fixtures: false,
+        request_specs: true,
+        controller_specs: true,
+        routing_specs: true
+      )
+    end
   end
 end

@@ -11,6 +11,7 @@ gem 'puma', '~> 5.0'
 gem 'rails', '~> 6.1.1'
 
 group :development, :test do
+  gem 'factory_bot_rails', '~> 6.1'
   gem 'pry-byebug'
   gem 'pry-rails'
 end
@@ -23,4 +24,11 @@ group :development do
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
   gem 'spring'
+end
+
+group :test do
+  gem 'database_cleaner'
+  gem 'rspec-rails', '~> 4.0', '>= 4.0.2'
+  gem 'shoulda-matchers', '~> 4.5', '>= 4.5.1'
+  gem 'simplecov', '0.17.1'
 end
