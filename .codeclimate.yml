@@ -1,0 +1,24 @@
+---
+version: "2"
+
+plugins:
+  brakeman:
+    enabled: true
+  editorconfig:
+    enabled: true
+  fixme:
+    enabled: true
+  flog:
+    enabled: true
+  markdownlint:
+    enabled: true
+  reek:
+    enabled: true
+  rubocop:
+    enabled: true
+    channel: rubocop-0-79
+
+exclude_patterns:
+  - Gemfile.lock
+  - db/
+  - spec/
