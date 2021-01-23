@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  api_version(module: 'V1', default: true, header: { name: 'Accept', value: 'application/vnd.ebookstore.v1+json' }) do
+  end
 end
