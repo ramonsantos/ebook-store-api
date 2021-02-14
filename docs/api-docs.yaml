@@ -1,0 +1,73 @@
+openapi: 3.0.0
+info:
+  title: Ebook Store API
+  description: Ebook Store API
+  version: 1.0.0
+tags:
+  - name: categories
+    description: Categories of ebooks
+servers:
+  - url: localhost:3000/
+    description: Development server
+paths:
+  /categories:
+    get:
+      security:
+        - Authorization: []
+      tags:
+       - categories
+      summary: Fetch categories
+      description: Fetch categories.
+      operationId: fetchCategories
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Categories'
+components:
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Categories:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                description: Id of category
+              type:
+                type: string
+                description: Type of entity
+              attributes:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Name of category
+                  code:
+                    type: string
+                    description: Code of category
+        meta:
+          type: object
+          properties:
+            total:
+              type: integer
+              description: Total of categories
+        links:
+          type: object
+          properties:
+            next:
+              type: string
+              description: Link to next page
+            prev:
+              type: string
+              description: Link to previous page

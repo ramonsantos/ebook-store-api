@@ -45,8 +45,8 @@ module EbookStoreApi
         :rspec,
         fixtures: false,
         request_specs: true,
-        controller_specs: true,
-        routing_specs: true
+        controller_specs: false,
+        routing_specs: false
       )
     end
   end
