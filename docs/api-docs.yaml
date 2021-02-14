@@ -26,6 +26,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Categories'
+  /categories/{category_code}:
+    delete:
+      security:
+        - Authorization: []
+      tags:
+       - categories
+      summary: Remove category
+      description: Removes a category.
+      operationId: removeCategory
+      parameters:
+        - name: category_code
+          in: path
+          required: true
+          description: Category code
+          schema:
+            type: string
+      responses:
+        204:
+          description: No Content
+        404:
+          description: Not Found
 components:
   securitySchemes:
     Authorization:

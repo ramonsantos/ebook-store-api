@@ -6,7 +6,7 @@ describe '/categories', type: :request do
   let(:headers) { { 'Accept': 'application/vnd.ebookstore.v1+json' } }
 
   describe 'GET /categories' do
-    context "when there aren't places" do
+    context "when there aren't categories" do
       it 'returns a success response' do
         get(categories_url, headers: headers)
 
@@ -15,7 +15,7 @@ describe '/categories', type: :request do
       end
     end
 
-    context 'when there are places' do
+    context 'when there are categories' do
       let!(:category) { create(:category) }
 
       let(:expected_response) do
@@ -37,6 +37,32 @@ describe '/categories', type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(JSON.parse(response.body)).to eq(expected_response)
+      end
+    end
+  end
+
+  describe 'DELETE /categories/:category_code' do
+    context 'when category is not found' do
+      it 'returns a success response' do
+        expect do
+          delete(category_path({ category_code: 'music' }), headers: headers)
+        end.not_to change(Category, :count)
+
+        expect(response).to have_http_status(:not_found)
+        expect(response.body).to eq('{"errors":[{"title":"Category \'music\' not found"}]}')
+      end
+    end
+
+    context 'when destroy category' do
+      let!(:category) { create(:category) }
+
+      it 'returns a success response' do
+        expect do
+          delete(category_path({ category_code: category.code }), headers: headers)
+        end.to change(Category, :count).by(-1)
+
+        expect(response).to have_http_status(:no_content)
+        expect(response.body).to be_blank
       end
     end
   end
