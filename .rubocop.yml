@@ -57,11 +57,7 @@ Metrics/MethodLength:
   Enabled: false
 
 Style/ClassAndModuleChildren:
-  Enabled: true
-  EnforcedStyle: compact
-  SupportedStyles:
-    - nested
-    - compact
+  Enabled: false
 
 Style/ColonMethodCall:
   Enabled: false

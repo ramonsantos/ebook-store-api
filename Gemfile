@@ -13,6 +13,7 @@ gem 'rails', '~> 6.1.1'
 gem 'versionist'
 
 group :development, :test do
+  gem 'amazing_print'
   gem 'factory_bot_rails', '~> 6.1'
   gem 'pry-byebug'
   gem 'pry-rails'
