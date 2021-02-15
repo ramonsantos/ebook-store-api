@@ -27,6 +27,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/Categories'
   /categories/{category_code}:
+    put:
+      security:
+        - Authorization: []
+      tags:
+       - categories
+      summary: Update category
+      description: Updates a category.
+      operationId: updateCategory
+      parameters:
+        - name: category_code
+          in: path
+          required: true
+          description: Category code
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Category'
+      responses:
+        204:
+          description: No Content
+        400:
+          description: Bab Request
+        404:
+          description: Not Found
+        422:
+          description: UnprocessableEntity
     delete:
       security:
         - Authorization: []
@@ -92,3 +121,15 @@ components:
             prev:
               type: string
               description: Link to previous page
+    Category:
+      type: object
+      properties:
+        category:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Name of category
+            code:
+              type: string
+              description: Code of category
