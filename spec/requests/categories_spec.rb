@@ -5,6 +5,17 @@ require 'rails_helper'
 describe '/categories', type: :request do
   let(:headers) { { 'Accept': 'application/vnd.ebookstore.v1+json' } }
   let(:category) { create(:category) }
+  let(:parsed_response) { JSON.parse(response.body) }
+  let(:category_not_found_response) { fixture('categories/responses/category_not_found_error_response.json') }
+
+  let(:request_body) do
+    {
+      data: {
+        type: 'category',
+        attributes: attributes
+      }
+    }
+  end
 
   describe 'GET /categories' do
     context "when there aren't categories" do
@@ -37,72 +48,110 @@ describe '/categories', type: :request do
         get(categories_url, headers: headers)
 
         expect(response).to have_http_status(:ok)
-        expect(JSON.parse(response.body)).to eq(expected_response)
+        expect(parsed_response).to eq(expected_response)
       end
     end
   end
 
   describe 'PUT /categories/:category_code' do
-    before { category }
+    let(:path_params) { { category_code: category.code } }
+
+    before { put(category_path(path_params), headers: headers, params: request_body) }
 
     context 'when success' do
-      let(:params) { { category: { code: 'saude', name: 'Saúde' } } }
+      context 'when one attribute' do
+        let(:attributes) { { code: 'saude' } }
 
-      let(:expected_error_message) do
-        '{"errors":[{"title":"The attribute \'name\' can\'t be blank"},{"title":"The attribute \'code\' can\'t be blank"}]}'
+        it 'returns success response' do
+          expect(response).to have_http_status(:no_content)
+          expect(response.body).to be_blank
+        end
+
+        it 'updates de category' do
+          category.reload
+          expect(category.code).to eq('saude')
+          expect(category.name).to eq('Engenharia de Software')
+        end
       end
 
-      before { put(category_path({ category_code: category.code }), headers: headers, params: params) }
+      context 'when all attributes' do
+        let(:attributes) { { code: 'saude', name: 'Saúde' } }
 
-      it 'returns success response' do
-        expect(response).to have_http_status(:no_content)
-        expect(response.body).to be_blank
-      end
+        it 'returns success response' do
+          expect(response).to have_http_status(:no_content)
+          expect(response.body).to be_blank
+        end
 
-      it 'updates de category' do
-        category.reload
-        expect(category.code).to eq('saude')
-        expect(category.name).to eq('Saúde')
+        it 'updates de category' do
+          category.reload
+          expect(category.code).to eq('saude')
+          expect(category.name).to eq('Saúde')
+        end
       end
     end
 
     context 'when error' do
       context 'when BadRequest' do
-        let(:params) { { category: {} } }
+        context 'when one attribute is blank' do
+          let(:attributes) { { name: '' } }
 
-        let(:expected_error_message) do
-          '{"errors":[{"title":"Param category is missing or the value is empty"}]}'
+          let(:expected_error_message) do
+            {
+              'errors' => [
+                {
+                  'title' => 'Attribute is required',
+                  'detail' => "The attribute 'name' can't be blank",
+                  'code' => 'attribute_blank',
+                  'source' => {
+                    'pointer' => '/data/attributes/name'
+                  }
+                }
+              ]
+            }
+          end
+
+          it do
+            expect(response).to have_http_status(:bad_request)
+            expect(parsed_response).to eq(expected_error_message)
+          end
         end
 
-        it do
-          put(category_path({ category_code: category.code }), headers: headers, params: params)
+        context 'when all attributes are blank' do
+          let(:attributes) { { code: '', name: '' } }
 
-          expect(response).to have_http_status(:bad_request)
-          expect(response.body).to eq(expected_error_message)
+          let(:expected_error_message) do
+            {
+              'errors' => [
+                {
+                  'title' => 'Attribute is required',
+                  'detail' => "The attribute 'name' can't be blank",
+                  'code' => 'attribute_blank',
+                  'source' => { 'pointer' => '/data/attributes/name' }
+                },
+                {
+                  'title' => 'Attribute is required',
+                  'detail' => "The attribute 'code' can't be blank",
+                  'code' => 'attribute_blank',
+                  'source' => { 'pointer' => '/data/attributes/code' }
+                }
+              ]
+            }
+          end
+
+          it do
+            expect(response).to have_http_status(:bad_request)
+            expect(parsed_response).to eq(expected_error_message)
+          end
         end
       end
 
       context 'when NotFound' do
-        it do
-          put(category_path({ category_code: 'music' }), headers: headers)
+        let(:path_params) { { category_code: 'music' } }
+        let(:attributes) { nil }
 
+        it do
           expect(response).to have_http_status(:not_found)
-          expect(response.body).to eq('{"errors":[{"title":"Category not found"}]}')
-        end
-      end
-
-      context 'when UnprocessableEntity' do
-        let(:params) { { category: { code: '', name: '' } } }
-
-        let(:expected_error_message) do
-          '{"errors":[{"title":"The attribute \'name\' can\'t be blank"},{"title":"The attribute \'code\' can\'t be blank"}]}'
-        end
-
-        it do
-          put(category_path({ category_code: category.code }), headers: headers, params: params)
-
-          expect(response).to have_http_status(:unprocessable_entity)
-          expect(response.body).to eq(expected_error_message)
+          expect(response.body).to eq(category_not_found_response)
         end
       end
     end
@@ -116,7 +165,7 @@ describe '/categories', type: :request do
         end.not_to change(Category, :count)
 
         expect(response).to have_http_status(:not_found)
-        expect(response.body).to eq('{"errors":[{"title":"Category not found"}]}')
+        expect(response.body).to eq(category_not_found_response)
       end
     end
 

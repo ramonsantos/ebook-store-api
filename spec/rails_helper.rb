@@ -36,4 +36,7 @@ RSpec.configure do |config|
 
   # FactoryBot
   config.include FactoryBot::Syntax::Methods
+
+  # Fixtures
+  config.file_fixture_path = 'spec/fixtures'
 end
