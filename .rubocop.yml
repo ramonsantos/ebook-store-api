@@ -35,6 +35,9 @@ Layout/LineLength:
   StyleGuide: '#80-character-limits'
   Enabled: false
 
+Lint/MissingSuper:
+  Enabled: false
+
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 
@@ -161,4 +164,7 @@ RSpec/NestedGroups:
   Enabled: false
 
 RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
   Enabled: false
