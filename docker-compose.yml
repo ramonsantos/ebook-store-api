@@ -4,6 +4,7 @@ services:
   database:
     image: postgres:alpine
     container_name: ebook_store_api_db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "1234"
