@@ -38,4 +38,17 @@ class ApiErrorSerializer
       }
     end
   end
+
+  def unprocessable_entity
+    record = error.options[:record]
+
+    record.errors.errors.map! do |error|
+      {
+        title: 'Resource Already Exists',
+        detail: "The #{record.class} Already Exists",
+        code: :resource_already_exists,
+        source: { pointer: "/data/attributes/#{error.attribute}" }
+      }
+    end
+  end
 end

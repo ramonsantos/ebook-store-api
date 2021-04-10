@@ -1,0 +1,1 @@
+{"errors":[{"title":"Resource Already Exists","detail":"The Category Already Exists","code":"resource_already_exists","source":{"pointer":"/data/attributes/name"}},{"title":"Resource Already Exists","detail":"The Category Already Exists","code":"resource_already_exists","source":{"pointer":"/data/attributes/code"}}]}

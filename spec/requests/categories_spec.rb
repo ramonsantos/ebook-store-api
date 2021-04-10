@@ -8,6 +8,10 @@ describe '/categories', type: :request do
   let(:parsed_response) { JSON.parse(response.body) }
   let(:category_not_found_response) { fixture('categories/responses/category_not_found_error_response.json') }
 
+  let(:category_blank_attributes_error_response) do
+    fixture('categories/responses/category_blank_attributes_error_response.json')
+  end
+
   let(:request_body) do
     {
       data: {
@@ -49,6 +53,57 @@ describe '/categories', type: :request do
 
         expect(response).to have_http_status(:ok)
         expect(parsed_response).to eq(expected_response)
+      end
+    end
+  end
+
+  describe 'POST /categories' do
+    context 'when success' do
+      let(:attributes) { { code: 'saude', name: 'Saúde' } }
+
+      it 'creates a new Category' do
+        expect do
+          post(categories_url, headers: headers, params: request_body)
+        end.to change(Category, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        expect(response.body).to include('"attributes":{"name":"Saúde","code":"saude"}')
+      end
+    end
+
+    context 'when error' do
+      let(:invalid_attributes) { { code: 'historia' } }
+
+      context 'when BadRequest error' do
+        let(:attributes) { {} }
+
+        it do
+          expect do
+            post(categories_url, headers: headers, params: request_body)
+          end.to change(Category, :count).by(0)
+
+          expect(response).to have_http_status(:bad_request)
+          expect(response.body).to eq(category_blank_attributes_error_response)
+        end
+      end
+
+      context 'when Conflict error' do
+        let(:attributes) { { code: 'saude', name: 'Saúde' } }
+
+        let(:category_already_exists_error_response) do
+          fixture('categories/responses/category_already_exists_error_response.json')
+        end
+
+        before { FactoryBot.create(:category, name: 'Saúde', code: 'saude') }
+
+        it 'creates a new Category' do
+          expect do
+            post(categories_url, headers: headers, params: request_body)
+          end.to change(Category, :count).by(0)
+
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to eq(category_already_exists_error_response)
+        end
       end
     end
   end
@@ -119,28 +174,9 @@ describe '/categories', type: :request do
         context 'when all attributes are blank' do
           let(:attributes) { { code: '', name: '' } }
 
-          let(:expected_error_message) do
-            {
-              'errors' => [
-                {
-                  'title' => 'Attribute is required',
-                  'detail' => "The attribute 'name' can't be blank",
-                  'code' => 'attribute_blank',
-                  'source' => { 'pointer' => '/data/attributes/name' }
-                },
-                {
-                  'title' => 'Attribute is required',
-                  'detail' => "The attribute 'code' can't be blank",
-                  'code' => 'attribute_blank',
-                  'source' => { 'pointer' => '/data/attributes/code' }
-                }
-              ]
-            }
-          end
-
           it do
             expect(response).to have_http_status(:bad_request)
-            expect(parsed_response).to eq(expected_error_message)
+            expect(response.body).to eq(category_blank_attributes_error_response)
           end
         end
       end

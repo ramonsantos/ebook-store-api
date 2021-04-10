@@ -8,6 +8,19 @@ class V1::CategoriesController < ApplicationController
     render json: CategorySerializer.new(Category.all, index_options).serializable_hash
   end
 
+  # POST /categories
+  def create
+    category = Category.create!(jsonapi_deserialize(params, only: [:code, :name]))
+
+    render json: CategorySerializer.new(category).serializable_hash, status: :created
+  rescue ActiveRecord::RecordInvalid => e
+    if e.record.errors.errors.any? { |error| error.type == :taken }
+      raise ApiError.new(:unprocessable_entity, { record: e.record })
+    else
+      raise ApiError.new(:bad_request, { record: e.record })
+    end
+  end
+
   # PUT /categories/:category_code
   def update
     category.update!(jsonapi_deserialize(params, only: [:code, :name]))
