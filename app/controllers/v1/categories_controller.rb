@@ -3,6 +3,8 @@
 class V1::CategoriesController < ApplicationController
   include JSONAPI::Deserialization
 
+  before_action :required_params, only: [:create]
+
   # GET /categories
   def index
     render json: CategorySerializer.new(Category.all, index_options).serializable_hash
@@ -10,24 +12,16 @@ class V1::CategoriesController < ApplicationController
 
   # POST /categories
   def create
-    category = Category.create!(jsonapi_deserialize(params, only: [:code, :name]))
+    category = Category.create!(category_params)
 
     render json: CategorySerializer.new(category).serializable_hash, status: :created
-  rescue ActiveRecord::RecordInvalid => e
-    if e.record.errors.errors.any? { |error| error.type == :taken }
-      raise ApiError.new(:unprocessable_entity, { record: e.record })
-    else
-      raise ApiError.new(:bad_request, { record: e.record })
-    end
   end
 
   # PUT /categories/:category_code
   def update
-    category.update!(jsonapi_deserialize(params, only: [:code, :name]))
+    category.update!(category_params)
 
     render json: category, status: :no_content
-  rescue ActiveRecord::RecordInvalid => e
-    raise ApiError.new(:bad_request, { record: e.record })
   end
 
   # DELETE /categories/:category_code
@@ -45,12 +39,10 @@ class V1::CategoriesController < ApplicationController
 
   def find_category
     Category.find_by!(code: params[:category_code])
-  rescue ActiveRecord::RecordNotFound => e
-    raise ApiError.new(:not_found, { model: e.model, identifier: params[:category_code] })
   end
 
   def category_params
-    params.require(:category).permit(:name, :code)
+    params.require(:data).require(:attributes).permit(:code, :name)
   end
 
   def index_options
@@ -58,5 +50,11 @@ class V1::CategoriesController < ApplicationController
       meta: { total: Category.count },
       links: { next: nil, prev: nil }
     }
+  end
+
+  def required_params
+    [:code, :name].each do |required_param|
+      category_params.require(required_param)
+    end
   end
 end

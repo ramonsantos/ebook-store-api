@@ -1,1 +1,1 @@
-{"errors":[{"title":"Attribute is required","detail":"The attribute 'name' can't be blank","code":"attribute_blank","source":{"pointer":"/data/attributes/name"}},{"title":"Attribute is required","detail":"The attribute 'code' can't be blank","code":"attribute_blank","source":{"pointer":"/data/attributes/code"}}]}
+{"errors":[{"title":"Attribute is required","detail":"The attribute 'name' can't be blank","code":"attribute_blank","source":{"pointer":"/data/attributes/name"}}]}

@@ -72,10 +72,8 @@ describe '/categories', type: :request do
     end
 
     context 'when error' do
-      let(:invalid_attributes) { { code: 'historia' } }
-
       context 'when BadRequest error' do
-        let(:attributes) { {} }
+        let(:attributes) { { code: 'historia' } }
 
         it do
           expect do
@@ -87,7 +85,7 @@ describe '/categories', type: :request do
         end
       end
 
-      context 'when Conflict error' do
+      context 'when UnprocessableEntity error' do
         let(:attributes) { { code: 'saude', name: 'Saúde' } }
 
         let(:category_already_exists_error_response) do
@@ -146,38 +144,27 @@ describe '/categories', type: :request do
     end
 
     context 'when error' do
-      context 'when BadRequest' do
-        context 'when one attribute is blank' do
-          let(:attributes) { { name: '' } }
+      context 'when UnprocessableEntity' do
+        let(:attributes) { { name: '' } }
 
-          let(:expected_error_message) do
-            {
-              'errors' => [
-                {
-                  'title' => 'Attribute is required',
-                  'detail' => "The attribute 'name' can't be blank",
-                  'code' => 'attribute_blank',
-                  'source' => {
-                    'pointer' => '/data/attributes/name'
-                  }
+        let(:expected_error_message) do
+          {
+            'errors' => [
+              {
+                'title' => 'Attribute is required',
+                'detail' => "The attribute 'name' can't be blank",
+                'code' => 'attribute_blank',
+                'source' => {
+                  'pointer' => '/data/attributes/name'
                 }
-              ]
-            }
-          end
-
-          it do
-            expect(response).to have_http_status(:bad_request)
-            expect(parsed_response).to eq(expected_error_message)
-          end
+              }
+            ]
+          }
         end
 
-        context 'when all attributes are blank' do
-          let(:attributes) { { code: '', name: '' } }
-
-          it do
-            expect(response).to have_http_status(:bad_request)
-            expect(response.body).to eq(category_blank_attributes_error_response)
-          end
+        it do
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(parsed_response).to eq(expected_error_message)
         end
       end
 

@@ -1,54 +1,51 @@
 # frozen_string_literal: true
 
 class ApiErrorSerializer
-  attr_reader :error
+  attr_reader :error, :options
 
-  def initialize(error)
-    @error = error
+  def initialize(error, options = {})
+    @error   = error
+    @options = options
   end
 
-  def serialize
-    { errors: send(error.http_status) }
-  end
+  def serialize(method) = { errors: send(method) }
 
   private
 
-  def not_found
-    model = error.options[:model]
-
+  def record_not_found
     [
       {
         title: 'Resource not found',
-        detail: "The #{model} '#{error.options[:identifier]}' is not found",
+        detail: "The #{error.model} '#{options[:identifier]}' is not found",
         code: :resource_not_found,
         source: {}
       }
     ]
   end
 
-  def bad_request
-    record = error.options[:record]
-
+  def record_invalid
     record.errors.errors.map! do |error|
       {
-        title: 'Attribute is required',
-        detail: "The attribute '#{error.attribute}' can't be blank",
-        code: :attribute_blank,
+        title:  I18n.t("api_error.record_invalid.#{error.type}.title"),
+        detail: I18n.t("api_error.record_invalid.#{error.type}.detail", entity: record.class, attribute: error.attribute),
+        code:   I18n.t("api_error.record_invalid.#{error.type}.code"),
         source: { pointer: "/data/attributes/#{error.attribute}" }
       }
     end
   end
 
-  def unprocessable_entity
-    record = error.options[:record]
-
-    record.errors.errors.map! do |error|
+  def parameter_missing
+    [
       {
-        title: 'Resource Already Exists',
-        detail: "The #{record.class} Already Exists",
-        code: :resource_already_exists,
-        source: { pointer: "/data/attributes/#{error.attribute}" }
+        title: 'Attribute is required',
+        detail: "The attribute '#{error.param}' can't be blank",
+        code: :attribute_blank,
+        source: { pointer: "/data/attributes/#{error.param}" }
       }
-    end
+    ]
+  end
+
+  def record
+    @record ||= error.record
   end
 end
