@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class V1::CategoriesController < ApplicationController
-  include JSONAPI::Deserialization
-
   before_action :required_params, only: [:create]
 
   # GET /categories
