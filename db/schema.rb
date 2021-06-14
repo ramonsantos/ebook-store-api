@@ -23,4 +23,5 @@ ActiveRecord::Schema.define(version: 2021_04_03_152405) do
     t.index ["code"], name: "index_categories_on_code", unique: true
     t.index ["name"], name: "index_categories_on_name", unique: true
   end
+
 end
