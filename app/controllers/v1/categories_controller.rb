@@ -5,7 +5,7 @@ class V1::CategoriesController < ApplicationController
 
   # GET /categories
   def index
-    render json: CategorySerializer.new(Category.all, index_options).serializable_hash
+    render json: CategorySerializer.new(categories, index_options).serializable_hash
   end
 
   # POST /categories
@@ -43,11 +43,29 @@ class V1::CategoriesController < ApplicationController
     params.require(:data).require(:attributes).permit(:code, :name)
   end
 
+  def categories
+    @categories ||= fetch_categories
+  end
+
+  def fetch_categories
+    Category.all.order(:name).page(page)
+  end
+
+  def page
+    params[:page] || 1
+  end
+
   def index_options
     {
-      meta: { total: Category.count },
-      links: { next: nil, prev: nil }
+      meta: { total: categories.total_count },
+      links: { next: build_next_link }
     }
+  end
+
+  def build_next_link
+    return nil if categories.next_page.blank?
+
+    "#{request.path}?page=#{categories.next_page}"
   end
 
   def required_params
