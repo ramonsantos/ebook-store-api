@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-require_relative 'support/coveage'
+require_relative 'support/coverage'
 
 ENV['RAILS_ENV'] ||= 'test'
 

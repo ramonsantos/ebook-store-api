@@ -8,7 +8,7 @@ module V1
 
     # POST /sign_up
     def create
-      build_resource(params[:data][:attributes].permit!.to_h).save!
+      build_resource(user_params).save!
 
       render json: { info: 'User created with success.' }, status: :created
     end
