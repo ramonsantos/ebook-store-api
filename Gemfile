@@ -24,7 +24,7 @@ group :development, :test do
 end
 
 group :development do
-  gem 'brakeman'
+  gem 'brakeman', '~> 5.0', '>= 5.0.4'
   gem 'listen', '~> 3.3'
   gem 'rubocop'
   gem 'rubocop-performance'

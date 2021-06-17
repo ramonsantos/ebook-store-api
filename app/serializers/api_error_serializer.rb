@@ -8,7 +8,9 @@ class ApiErrorSerializer
     @options = options
   end
 
-  def serialize(method) = { errors: send(method) }
+  def serialize(method)
+    { errors: send(method) }
+  end
 
   private
 
