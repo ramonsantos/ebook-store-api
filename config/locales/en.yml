@@ -9,4 +9,7 @@ en:
         title: Resource already exists
         detail: The %{entity} already exists
         code: resource_already_exists
-
+      too_short:
+        title: Attribute too short
+        detail: The attribute '%{attribute}' is too short (minimum is %{count} characters)
+        code: attribute_too_short

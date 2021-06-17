@@ -27,7 +27,7 @@ class ApiErrorSerializer
     record.errors.errors.map! do |error|
       {
         title:  I18n.t("api_error.record_invalid.#{error.type}.title"),
-        detail: I18n.t("api_error.record_invalid.#{error.type}.detail", entity: record.class, attribute: error.attribute),
+        detail: build_detail(record, error),
         code:   I18n.t("api_error.record_invalid.#{error.type}.code"),
         source: { pointer: "/data/attributes/#{error.attribute}" }
       }
@@ -43,6 +43,26 @@ class ApiErrorSerializer
         source: { pointer: "/data/attributes/#{error.param}" }
       }
     ]
+  end
+
+  def unauthorized
+    [
+      {
+        title: 'Unauthorized',
+        detail: 'Invalid Email or password.',
+        code: :unauthorized,
+        source: {}
+      }
+    ]
+  end
+
+  def build_detail(record, error)
+    I18n.t(
+      "api_error.record_invalid.#{error.type}.detail",
+      entity: record.class,
+      attribute: error.attribute,
+      count: error.try(:options).try(:fetch, :count, nil)
+    )
   end
 
   def record

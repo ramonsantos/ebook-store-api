@@ -1,0 +1,1 @@
+{"errors":[{"title":"Attribute is required","detail":"The attribute 'email' can't be blank","code":"attribute_blank","source":{"pointer":"/data/attributes/email"}}]}

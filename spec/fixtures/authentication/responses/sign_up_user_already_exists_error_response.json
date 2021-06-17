@@ -1,0 +1,1 @@
+{"errors":[{"title":"Resource already exists","detail":"The User already exists","code":"resource_already_exists","source":{"pointer":"/data/attributes/email"}}]}
