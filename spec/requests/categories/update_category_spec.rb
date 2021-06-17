@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 describe 'PUT /categories/:category_code', type: :request do
+  include_context 'request_shared_context'
   include_context 'request_categories_shared_context'
 
   let(:path_params) { { category_code: category.code } }

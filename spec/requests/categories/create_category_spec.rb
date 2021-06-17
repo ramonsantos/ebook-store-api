@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 describe 'POST /categories', type: :request do
+  include_context 'request_shared_context'
   include_context 'request_categories_shared_context'
 
   context 'when success' do
@@ -29,7 +30,7 @@ describe 'POST /categories', type: :request do
       it do
         expect do
           post(categories_url, headers: headers, params: request_body)
-        end.to change(Category, :count).by(0)
+        end.not_to change(Category, :count)
 
         expect(response).to have_http_status(:bad_request)
         expect(response.body).to eq(category_blank_attributes_error_response)
@@ -48,7 +49,7 @@ describe 'POST /categories', type: :request do
       it 'creates a new Category' do
         expect do
           post(categories_url, headers: headers, params: request_body)
-        end.to change(Category, :count).by(0)
+        end.not_to change(Category, :count)
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.body).to eq(category_already_exists_error_response)

@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 describe 'DELETE /categories/:category_code', type: :request do
+  include_context 'request_shared_context'
   include_context 'request_categories_shared_context'
 
   context 'when category is not found' do
