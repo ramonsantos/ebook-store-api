@@ -58,6 +58,17 @@ class ApiErrorSerializer
     ]
   end
 
+  def not_authorized
+    [
+      {
+        title: 'Not authorized',
+        detail: 'User not authorized.',
+        code: :not_authorized,
+        source: {}
+      }
+    ]
+  end
+
   def build_detail(record, error)
     I18n.t(
       "api_error.record_invalid.#{error.type}.detail",
