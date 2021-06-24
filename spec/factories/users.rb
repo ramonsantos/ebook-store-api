@@ -4,5 +4,6 @@ FactoryBot.define do
   factory :user do
     email { 'user.test@gmail.com' }
     password { '123456' }
+    role { 'customer' }
   end
 end
